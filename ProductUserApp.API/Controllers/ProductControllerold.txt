@@ -1,13 +1,11 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ProductUserApp.Application.Products.Commands.CreateProduct;
 using ProductUserApp.Application.Products.Commands.UpdateProduct;
 using ProductUserApp.Application.Products.Queries.GetAllProducts;
 using ProductUserApp.Application.Products.Commands.DeleteProduct;
-using ProductUserApp.Application.Products.Queries.GetProductById; 
+using ProductUserApp.Application.Products.Queries.GetProductById;
 using ProductUserApp.Application.Products.Queries.GetProductsByUserId;
-using Microsoft.Extensions.Logging;
-using System.Security.Claims;
 
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,15 +15,13 @@ namespace ProductUserApp.API.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/products")]
-public class ProductsController : ControllerBase
+public class ProductsControllerOld : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly ILogger<ProductsController> _logger;
 
-    public ProductsController(IMediator mediator, ILogger<ProductsController> logger)
+    public ProductsControllerOld(IMediator mediator)
     {
         _mediator = mediator;
-        _logger = logger;
     }
 
     [HttpPost]
@@ -35,12 +31,11 @@ public class ProductsController : ControllerBase
         return Ok(productId);
     }
 
-    [HttpGet]
     [Authorize(Roles = "Admin")]
+    [HttpGet("{userId}")]
+    [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        _logger.LogInformation($"true or false:{User.IsInRole("Admin").ToString()}");
-
         return Ok(await _mediator.Send(new GetAllProductsQuery()));
     }
 
@@ -85,17 +80,6 @@ public class ProductsController : ControllerBase
         );
 
         return Ok(products);
-    }
-
-
-    [HttpGet("debug")]
-    public IActionResult DebugToken()
-    {
-        return Ok(new
-        {
-            IsAuthenticated = User.Identity?.IsAuthenticated,
-            Claims = User.Claims.Select(c => new { c.Type, c.Value })
-        });
     }
 
 }

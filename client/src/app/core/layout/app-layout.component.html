@@ -1,0 +1,35 @@
+<div class="layout">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2 class="logo">ProductApp</h2>
+
+    <a routerLink="/admin/products" routerLinkActive="active">
+      Products
+    </a>
+
+    <a routerLink="/admin/users" routerLinkActive="active">
+      Users
+    </a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div>Welcome 👋</div>
+
+      <div class="user-section">
+        <span>Admin</span>
+        <button class="logout-btn" (click)="onLogout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="content">
+      <ng-content></ng-content>
+    </div>
+
+  </div>
+</div>

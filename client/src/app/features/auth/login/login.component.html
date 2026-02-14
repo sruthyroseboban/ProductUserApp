@@ -1,0 +1,37 @@
+<!--<div>
+  <h2>Login Page</h2>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+    <input type="email" formControlName="email" placeholder="Email" />
+    <input type="password" formControlName="password" placeholder="Password" />
+    <button type="submit">Login</button>
+  </form>
+
+  <button (click)="goToRegister()">Go to Register</button>
+</div>-->
+
+
+<div class="auth-container">
+  <p-card header="Login">
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="p-fluid">
+
+      <div class="field">
+        <label>Email</label>
+        <input pInputText type="email" formControlName="email" />
+      </div>
+
+      <div class="field mt-3">
+        <label>Password</label>
+        <p-password formControlName="password" [feedback]="false"></p-password>
+      </div>
+
+      <div class="mt-4">
+        <!--<button pButton type="submit" label="Login" class="w-full"></button>-->
+        <button type="submit" class="w-full">Login</button>
+      </div>
+
+    </form>
+
+  </p-card>
+</div>
+

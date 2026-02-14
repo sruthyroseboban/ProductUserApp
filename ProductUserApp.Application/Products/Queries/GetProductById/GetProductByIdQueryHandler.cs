@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.VisualBasic;
 using ProductUserApp.Application.Interfaces;
 using ProductUserApp.Application.Products.DTOs;
 
@@ -32,3 +33,4 @@ public class GetProductByIdQueryHandler
         };
     }
 }
+//

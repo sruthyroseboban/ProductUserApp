@@ -19,30 +19,48 @@ public class JwtTokenGenerator : IJwtService
     public string GenerateToken(int userId, string email, string role)
     {
         var jwt = _configuration.GetSection("Jwt");
+
+        var keyString = jwt["Key"]
+            ?? throw new Exception("JWT Key missing in configuration");
+
+        var issuer = jwt["Issuer"]
+            ?? throw new Exception("JWT Issuer missing in configuration");
+
+        var audience = jwt["Audience"]
+            ?? throw new Exception("JWT Audience missing in configuration");
+
+        var expiry = jwt["ExpiryMinutes"]
+            ?? throw new Exception("JWT ExpiryMinutes missing in configuration");
+
         var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwt["Key"]!)
+            Encoding.UTF8.GetBytes(keyString)
         );
+
 
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, email),
-            new Claim(ClaimTypes.Role, role)
+            new Claim("role", role)
+
         };
 
         var token = new JwtSecurityToken(
-            issuer: jwt["Issuer"],
-            audience: jwt["Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(
-                int.Parse(jwt["ExpiryMinutes"]!)
-            ),
-            signingCredentials: new SigningCredentials(
-                key,
-                SecurityAlgorithms.HmacSha256
-            )
-        );
+        issuer: issuer,
+        audience: audience,
+        claims: claims,
+        expires: DateTime.UtcNow.AddMinutes(int.Parse(expiry)),
+        signingCredentials: new SigningCredentials(
+            key,
+            SecurityAlgorithms.HmacSha256
+        )
+    );
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+        Console.WriteLine($"Generated JWT for user {email} with role {role} is {tokenString}");
+
+        return tokenString;
     }
 }

@@ -1,0 +1,393 @@
+:root {
+  --bg: #fbfdff;
+  --card-bg: #ffffff;
+  --text: #000000;
+  --muted: #4b5563;
+  --accent: #e6f2ff;
+  --accent-2: #d0e9ff;
+  --table-border: #1f4a6a;
+  --btn-primary-bg: #2b6cb0;
+  --btn-secondary-bg: #9ca3af;
+  --btn-edit-bg: #f59e0b;
+  --btn-danger-bg: #dc2626;
+  --radius: 8px;
+}
+
+/* Container */
+.dashboard-container {
+  background: var(--bg);
+  color: var(--text);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+/* PrimeNG Form Styles */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+/* Badge Styles */
+.badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.badge-admin {
+  background-color: #FEE2E2;
+  color: #991B1B;
+}
+
+.badge-user {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+/* Utility Classes */
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.align-items-end {
+  align-items: flex-end;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* PrimeNG Override for better appearance */
+::ng-deep {
+  .p-card {
+    box-shadow: 0 1px 4px rgba(16, 24, 40, 0.06);
+  }
+
+  .p-card .p-card-header {
+    font-weight: 600;
+    font-size: 1.25rem;
+    padding: 1.25rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .p-card .p-card-body {
+    padding: 1.25rem;
+  }
+
+  .p-datatable .p-datatable-thead > tr > th {
+    background-color: #f9fafb;
+    color: var(--text);
+    font-weight: 600;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+  }
+
+  .p-datatable .p-datatable-tbody > tr > td {
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+  }
+
+  .p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
+    background-color: #f9fafb;
+  }
+
+  .p-button.p-button-text {
+    padding: 0.5rem;
+  }
+
+  .p-paginator {
+    padding: 1rem;
+    background-color: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .p-dropdown {
+    width: 100%;
+  }
+
+  .p-select {
+    width: 100%;
+  }
+
+  .p-inputtext {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+  }
+
+  .p-inputtext:enabled:focus {
+    outline: 2px solid rgba(43, 108, 176, 0.15);
+    border-color: var(--btn-primary-bg);
+    box-shadow: none;
+  }
+
+  .p-confirmdialog .p-dialog-content {
+    padding: 1.5rem;
+  }
+
+  .p-confirmdialog .p-confirm-dialog-icon {
+    font-size: 2rem;
+    color: #f59e0b;
+  }
+}
+
+/* Buttons common */
+/*button {
+  color: #000;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+}*/
+
+/* Primary / Secondary / Edit / Danger */
+/*.btn-primary {
+  background: var(--btn-primary-bg);
+  color: #1b16ed; 
+  border: 2px solid rgba(43,108,176,0.15);
+}
+
+  .btn-primary:hover {
+    filter: brightness(0.95);
+  }
+
+.btn-secondary {
+  background: var(--btn-secondary-bg);
+  color: #000;
+}
+
+  .btn-secondary:hover {
+    filter: brightness(0.95);
+  }
+
+.btn-edit {
+  background: var(--btn-edit-bg);
+  color: #000;
+}
+
+  .btn-edit:hover {
+    filter: brightness(0.95);
+  }
+
+.btn-danger {
+  background: var(--btn-danger-bg);
+  color: #fff;
+}
+
+  .btn-danger:hover {
+    filter: brightness(0.95);
+  }*/
+
+/* Table wrapper for responsiveness */
+.custom-table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+/* Table */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+  background: var(--accent);
+  border: 3px solid var(--table-border); /* thick outer border */
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+  /* Header */
+  .custom-table thead th {
+    background: var(--accent-2);
+    color: var(--text);
+    text-align: left;
+    padding: 12px 14px;
+    font-weight: 700;
+    border-bottom: 2px solid rgba(31,74,106,0.12);
+  }
+
+  /* Cells */
+  .custom-table tbody td {
+    padding: 12px 14px;
+    color: var(--text);
+    border-top: 1px solid rgba(31,74,106,0.06);
+  }
+
+  /* Row striping for distinction while keeping light theme */
+  .custom-table tbody tr:nth-child(odd) {
+    background: rgba(255,255,255,0.0);
+  }
+
+  .custom-table tbody tr:nth-child(even) {
+    background: rgba(255,255,255,0.06);
+  }
+
+  /* Action cell */
+  .custom-table td > button {
+    margin-right: 8px;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+  }
+
+  /* Small adjustments */
+  .custom-table th[width] {
+    width: 150px;
+  }
+
+  /* ===== Accessibility and color overrides =====
+   Ensure labels, headings and typed input text are dark (black).
+   These rules increase specificity to override conflicting global theme styles.
+*/
+  label,
+  .form-row label,
+  .card-header h2,
+  .custom-table thead th,
+  .custom-table tbody td,
+  .card,
+  .dashboard-container {
+    color: var(--text) !important;
+  }
+
+/* Force input/textarea typed text to use the primary text color */
+.form-row input[type="text"],
+.form-row input[type="number"],
+.form-row input,
+input,
+textarea {
+  color: var(--text) !important;
+  background: #fff !important;
+  caret-color: var(--text) !important;
+}
+
+  /* Hide placeholder text on focus (standard + vendor prefixes) */
+  .form-row input:focus::placeholder,
+  .form-row textarea:focus::placeholder,
+  input:focus::placeholder,
+  textarea:focus::placeholder {
+    color: transparent;
+    transition: color 0.12s linear;
+  }
+
+  /* WebKit / Blink */
+  .form-row input:focus::-webkit-input-placeholder,
+  .form-row textarea:focus::-webkit-input-placeholder,
+  input:focus::-webkit-input-placeholder,
+  textarea:focus::-webkit-input-placeholder {
+    color: transparent;
+  }
+
+  /* Mozilla Firefox */
+  .form-row input:focus::-moz-placeholder,
+  .form-row textarea:focus::-moz-placeholder,
+  input:focus::-moz-placeholder,
+  textarea:focus::-moz-placeholder {
+    color: transparent;
+    opacity: 1; /* ensure full transparency takes effect */
+  }
+
+  /* Microsoft Edge / IE */
+  .form-row input:focus:-ms-input-placeholder,
+  .form-row textarea:focus:-ms-input-placeholder,
+  input:focus:-ms-input-placeholder,
+  textarea:focus:-ms-input-placeholder {
+    color: transparent;
+  }
+
+  .form-row input:focus::-ms-input-placeholder,
+  .form-row textarea:focus::-ms-input-placeholder,
+  input:focus::-ms-input-placeholder,
+  textarea:focus::-ms-input-placeholder {
+    color: transparent;
+  }
+
+  /* Optional: visually hide typed text on focus for inputs that opt-in via an attribute.
+   Add `data-clear-on-focus` to an input element to visually hide its existing value when focused.
+   Note: This hides text visually (sets color & caret invisible). To actually clear the value use JS (see below).
+*/
+  .form-row input[data-clear-on-focus]:focus,
+  .form-row textarea[data-clear-on-focus]:focus,
+  input[data-clear-on-focus]:focus,
+  textarea[data-clear-on-focus]:focus {
+    color: transparent !important;
+    caret-color: transparent !important;
+    transition: color 0.08s linear;
+  }
+
+  /* Example JS (optional) to actually clear the value on first focus:
+   Place in the component TS or a script block and only apply when desired.
+
+   document.querySelectorAll('input[data-clear-on-focus], textarea[data-clear-on-focus]').forEach(el => {
+     const handler = (e) => {
+       if (!el.dataset.cleared) {
+         el.value = '';               // clear actual value
+         el.dataset.cleared = '1';    // mark as cleared so this only runs once
+       }
+     };
+     el.addEventListener('focus', handler, { once: true });
+   });
+
+   Use this if you want the input's value removed on first click instead of only hiding it.
+*/
+
+  /* Keep existing specificity and accessibility rules intact:
+   ensure placeholder color override doesn't conflict with dark/light theme overrides.
+*/
+  .form-row input::placeholder,
+  .form-row textarea::placeholder,
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--muted);
+    opacity: 1;
+  }
+
+/* Responsive */
+@media (max-width: 700px) {
+  .form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+    .form-row input {
+      width: 100%;
+    }
+
+  .custom-table {
+    min-width: 600px;
+  }
+}

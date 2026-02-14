@@ -10,7 +10,8 @@ using ProductUserApp.Application.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-
+using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace ProductUserApp.API.Controllers;
 
@@ -20,10 +21,12 @@ namespace ProductUserApp.API.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly ILogger<UsersController> _logger;
 
-    public UsersController(IMediator mediator)
+    public UsersController(IMediator mediator, ILogger<UsersController> logger)
     {
         _mediator = mediator;
+        _logger = logger;
     }
 
     [AllowAnonymous]
@@ -39,7 +42,7 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> Login(LoginUserCommand command)
     {
         var token = await _mediator.Send(command);
-        return Ok(token);
+        return Ok(new { token });
     }
     // CREATE
     [Authorize]
@@ -48,10 +51,12 @@ public class UsersController : ControllerBase
         => Ok(await _mediator.Send(command));
 
     // READ ALL
-    [Authorize]
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAll()
-        => Ok(await _mediator.Send(new GetAllUsersQuery()));
+    {
+        _logger.LogInformation($"true or false:{User.IsInRole("Admin").ToString()}");
+        return Ok(await _mediator.Send(new GetAllUsersQuery())); }
 
     // READ BY ID
     [Authorize]
@@ -79,3 +84,79 @@ public class UsersController : ControllerBase
     }
 }
 
+
+//[Route("api/[controller]")]
+//[ApiController]
+//[Authorize(Roles = "Admin")]
+//public class UsersController : ControllerBase
+//{
+//    private readonly ApplicationDbContext _context;
+
+//    public UsersController(ApplicationDbContext context)
+//    {
+//        _context = context;
+//    }
+
+//    // GET: api/users
+//    [HttpGet]
+//    public async Task<IActionResult> GetAllUsers()
+//    {
+//        var users = await _context.Users.ToListAsync();
+//        return Ok(users);
+//    }
+
+//    // GET: api/users/5
+//    [HttpGet("{id}")]
+//    public async Task<IActionResult> GetUserById(int id)
+//    {
+//        var user = await _context.Users.FindAsync(id);
+
+//        if (user == null)
+//            return NotFound();
+
+//        return Ok(user);
+//    }
+
+//    // POST: api/users
+//    [HttpPost]
+//    public async Task<IActionResult> CreateUser(User user)
+//    {
+//        _context.Users.Add(user);
+//        await _context.SaveChangesAsync();
+
+//        return Ok(user);
+//    }
+
+//    // PUT: api/users/5
+//    [HttpPut("{id}")]
+//    public async Task<IActionResult> UpdateUser(int id, User updatedUser)
+//    {
+//        var user = await _context.Users.FindAsync(id);
+
+//        if (user == null)
+//            return NotFound();
+
+//        user.Name = updatedUser.Name;
+//        user.Email = updatedUser.Email;
+//        user.Role = updatedUser.Role;
+
+//        await _context.SaveChangesAsync();
+
+//        return Ok(user);
+//    }
+
+//    // DELETE: api/users/5
+//    [HttpDelete("{id}")]
+//    public async Task<IActionResult> DeleteUser(int id)
+//    {
+//        var user = await _context.Users.FindAsync(id);
+
+//        if (user == null)
+//            return NotFound();
+
+//        _context.Users.Remove(user);
+//        await _context.SaveChangesAsync();
+
+//        return Ok();
+//    }
+//}

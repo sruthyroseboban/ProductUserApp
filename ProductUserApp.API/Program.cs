@@ -10,6 +10,7 @@ using ProductUserApp.Application.Interfaces;
 using ProductUserApp.Infrastructure.Data;
 using ProductUserApp.Infrastructure.Repositories;
 using ProductUserApp.Infrastructure.Services;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,8 +43,17 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IJwtService, JwtTokenGenerator>();
 
 //jwt authentication 
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["Secret"];
+var jwtSection = builder.Configuration.GetSection("Jwt");
+
+var keyString = jwtSection["Key"]
+    ?? throw new Exception("JWT Key missing in configuration");
+
+var issuer = jwtSection["Issuer"]
+    ?? throw new Exception("JWT Issuer missing in configuration");
+
+var audience = jwtSection["Audience"]
+    ?? throw new Exception("JWT Audience missing in configuration");
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -54,16 +64,37 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        ValidateLifetime = true,
+        ValidateIssuer = true,
+        ValidateAudience = true,
         ValidateIssuerSigningKey = true,
+        ValidateLifetime = true,
+
+        ValidIssuer = issuer,
+        ValidAudience = audience,
+
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(secretKey))
+            Encoding.UTF8.GetBytes(keyString)
+        ),
+
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = ClaimTypes.NameIdentifier
     };
 });
 
+
 builder.Services.AddAuthorization();
+
+//cors policy to allow Angular frontend to access the API
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 var app = builder.Build();
 
@@ -74,7 +105,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("AllowAngular");
 app.UseAuthentication();  
 app.UseAuthorization();
 
