@@ -51,7 +51,7 @@ export class LoginComponent {
     this.authService.login(this.loginForm.value).subscribe({
       next: (response: any) => {
 
-        this.authService.saveToken(response.token);
+        // Tokens are already saved automatically in the login method
 
         // Redirect based on role
         const role = this.authService.getUserRole();

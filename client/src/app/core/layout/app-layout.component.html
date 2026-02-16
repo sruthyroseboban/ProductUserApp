@@ -4,13 +4,28 @@
   <div class="sidebar">
     <h2 class="logo">ProductApp</h2>
 
-    <a routerLink="/admin/products" routerLinkActive="active">
-      Products
-    </a>
+    <!-- Admin Navigation -->
+    <ng-container *ngIf="isAdmin">
+      <a routerLink="/admin/products" routerLinkActive="active">
+        All Products
+      </a>
 
-    <a routerLink="/admin/users" routerLinkActive="active">
-      Users
-    </a>
+      <a routerLink="/admin/users" routerLinkActive="active">
+        Manage Users
+      </a>
+    </ng-container>
+
+    <!-- User Navigation -->
+    <ng-container *ngIf="!isAdmin">
+      <a routerLink="/products" routerLinkActive="active">
+        My Products
+      </a>
+
+      <!--<a routerLink="/products/create" routerLinkActive="active">
+        Add Product
+      </a>-->
+    </ng-container>
+
   </div>
 
   <!-- Main Content -->
@@ -21,7 +36,9 @@
       <div>Welcome 👋</div>
 
       <div class="user-section">
-        <span>Admin</span>
+        <span>{{ isAdmin ? 'Admin' : 'User' }}
+        <!--({{ role }})-->
+        </span>
         <button class="logout-btn" (click)="onLogout()">Logout</button>
       </div>
     </div>

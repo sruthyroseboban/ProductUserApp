@@ -10,6 +10,7 @@ import { UserProductsComponent } from './features/user/products/user-products.co
 
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
+import { smartRedirectGuard } from './core/guards/smart-redirect.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -17,26 +18,46 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
 
+  //{
+  //  path: 'user-dashboard',
+  //  canActivate: [authGuard, roleGuard],
+  //  data: { role: 'User' },
+  //  component: UserDashboardComponent
+  //},
+  //{
+  //  path: 'admin-dashboard',
+  //  canActivate: [authGuard, roleGuard],
+  //  data: { role: 'Admin' },
+  //  component: AdminDashboardComponent
+  //},
+
+  // ADMIN - protected
   {
-    path: 'user-dashboard',
-    canActivate: [authGuard, roleGuard],
-    data: { role: 'User' },
-    component: UserDashboardComponent
-  },
-  {
-    path: 'admin-dashboard',
+    path: 'admin/products',
     canActivate: [authGuard, roleGuard],
     data: { role: 'Admin' },
-    component: AdminDashboardComponent
+    component: AdminProductsComponent
+  },
+  {
+    path: 'admin/users',
+    canActivate: [authGuard, roleGuard],
+    data: { role: 'Admin' },
+    component: AdminUsersComponent
   },
 
-  // ADMIN
-  { path: 'admin/products', component: AdminProductsComponent },
-  { path: 'admin/users', component: AdminUsersComponent },
+  // USER - protected
+  {
+    path: 'user/products',
+    canActivate: [authGuard, roleGuard],
+    data: { role: 'User' },
+    component: UserProductsComponent
+  },
 
-  // USER
-  { path: 'user/products', component: UserProductsComponent },
-
-  { path: '**', redirectTo: 'login' }
+  // Unknown routes - smart redirect based on authentication
+  { 
+    path: '**', 
+    canActivate: [smartRedirectGuard],
+    children: [] 
+  }
 ];
 

@@ -1,0 +1,11 @@
+namespace ProductService.Application.Products.DTOs;
+
+public class ProductDto
+{
+    public string Id { get; set; } = default!;
+    public string Name { get; set; } = default!;
+    public decimal Price { get; set; }
+    public DateTime DateOfManufacture { get; set; }
+    public DateTime DateOfExpiry { get; set; }
+    public int CreatedByUserId { get; set; }
+}

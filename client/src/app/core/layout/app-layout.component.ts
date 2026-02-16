@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -10,11 +10,25 @@ import { Router, RouterModule } from '@angular/router';
   templateUrl: './app-layout.component.html',
   styleUrl: './app-layout.component.css'
 })
-export class AppLayoutComponent {
+export class AppLayoutComponent implements OnInit {
   role: string | null = '';
-  constructor(private authService: AuthService, private router: Router) {
+  isAdmin: boolean = false;
+  userName: string = 'User';
+
+  constructor(private authService: AuthService, private router: Router) {}
+
+  ngOnInit(): void {
     this.role = this.authService.getUserRole();
-}
+    this.isAdmin = this.role === 'Admin';
+
+    // Get user name from token if available
+    const userId = this.authService.getUserId();
+    if (userId) {
+      this.userName = this.role === 'Admin' ? 'Admin' : 'User';
+    }
+
+    console.log('User role:', this.role, 'isAdmin:', this.isAdmin);
+  }
 
   onLogout(): void {
     this.authService.logout();

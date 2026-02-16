@@ -1,6 +1,0 @@
-<Solution>
-  <Project Path="ProductUserApp.API/ProductUserApp.API.csproj" />
-  <Project Path="ProductUserApp.Application/ProductUserApp.Application.csproj" />
-  <Project Path="ProductUserApp.Domain/ProductUserApp.Domain.csproj" />
-  <Project Path="ProductUserApp.Infrastructure/ProductUserApp.Infrastructure.csproj" />
-</Solution>

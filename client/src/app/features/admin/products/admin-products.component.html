@@ -1,72 +1,41 @@
 <app-layout>
+  <!-- Toast for notifications -->
+  <p-toast></p-toast>
+
   <div class="dashboard-container">
-    
-    <!-- Product Form Card -->
-    <p-card [header]="isEditMode ? 'Edit Product' : 'Create Product'" styleClass="mb-4">
-      <div class="form-grid">
-        <div class="field">
-          <label for="productName">Product Name</label>
-          <input 
-            pInputText 
-            id="productName" 
-            [(ngModel)]="selectedProduct.name" 
-            placeholder="Enter product name"
-            class="w-full" />
-        </div>
-
-        <div class="field">
-          <label for="price">Price</label>
-          <p-inputNumber
-            id="price"
-            [(ngModel)]="selectedProduct.price"
-            placeholder="Enter price"
-            class="w-full">
-          </p-inputNumber>
-        </div>
-
-        <div class="field">
-          <label for="dateOfManufacture">Date of Manufacture</label>
-          <input 
-            pInputText 
-            id="dateOfManufacture" 
-            type="date"
-            [(ngModel)]="selectedProduct.dateOfManufacture" 
-            class="w-full" />
-        </div>
-
-        <div class="field">
-          <label for="dateOfExpiry">Date of Expiry</label>
-          <input 
-            pInputText 
-            id="dateOfExpiry" 
-            type="date"
-            [(ngModel)]="selectedProduct.dateOfExpiry" 
-            class="w-full" />
-        </div>
-
-        <div class="field flex gap-2 align-items-end">
-          <p-button 
-            [label]="isEditMode ? 'Update' : 'Create'" 
-            icon="pi pi-check"
-            (onClick)="saveProduct()"
-            severity="success">
-          </p-button>
-
-          <p-button 
-            *ngIf="isEditMode"
-            label="Cancel" 
-            icon="pi pi-times"
-            (onClick)="resetForm()"
-            severity="secondary">
-          </p-button>
-        </div>
-      </div>
-    </p-card>
 
     <!-- Products Table Card -->
     <p-card header="All Products">
+
+      <!-- Toolbar -->
+      <div class="flex justify-content-between mb-3">
+        <input pInputText 
+               type="text" 
+               placeholder="Search products..."
+               [(ngModel)]="searchValue"
+               (input)="onSearch()" />
+
+        <div class="flex gap-2">
+          <button pButton 
+                  type="button" 
+                  label="Create Product" 
+                  icon="pi pi-plus"
+                  (click)="showCreateDialog()"
+                  severity="success">
+          </button>
+
+          <button pButton 
+                  type="button" 
+                  label="Refresh" 
+                  icon="pi pi-refresh"
+                  (click)="loadProducts()">
+          </button>
+        </div>
+      </div>
+
+      <!-- Table -->
       <p-table 
-        [value]="products" 
+        [value]="filteredProducts" 
         [paginator]="true" 
         [rows]="10"
         [tableStyle]="{ 'min-width': '50rem' }"
@@ -74,56 +43,141 @@
         [showCurrentPageReport]="true"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
         styleClass="p-datatable-striped">
-        
-        <ng-template #header>
+
+        <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="id">ID <p-sortIcon field="id" /></th>
+            <!--<th pSortableColumn="id">ID <p-sortIcon field="id" /></th>-->
             <th pSortableColumn="name">Name <p-sortIcon field="name" /></th>
             <th pSortableColumn="price">Price <p-sortIcon field="price" /></th>
             <th pSortableColumn="dateOfManufacture">Date of Manufacture <p-sortIcon field="dateOfManufacture" /></th>
             <th pSortableColumn="dateOfExpiry">Date of Expiry <p-sortIcon field="dateOfExpiry" /></th>
-            <th style="width: 200px">Actions</th>
+            <th pSortableColumn="createdByUserId">Created By User ID <p-sortIcon field="createdByUserId" /></th>
+            <th style="width: 150px">Actions</th>
           </tr>
         </ng-template>
-        
-        <ng-template #body let-product>
+
+        <ng-template pTemplate="body" let-product>
           <tr>
-            <td>{{ product.id }}</td>
+            <!--<td>{{ product.id }}</td>-->
             <td>{{ product.name }}</td>
             <td>{{ product.price }}</td>
-            <td>{{ product.dateOfManufacture }}</td>
-            <td>{{ product.dateOfExpiry }}</td>
+            <td>{{ product.dateOfManufacture | date }}</td>
+            <td>{{ product.dateOfExpiry | date }}</td>
+            <td>{{ product.createdByUserId }}</td>
             <td>
               <div class="flex gap-2">
-                <p-button  
-                  icon="pi pi-pencil" 
-                  [rounded]="true"
-                  severity="info"
-                  size="small"
-                  (onClick)="editProduct(product)">
-                </p-button>
-                <p-button 
-                  icon="pi pi-trash" 
-                  [rounded]="true"
-                  severity="danger"
-                  size="small"
-                  (onClick)="deleteProduct(product.id!)">
-                </p-button>
+                <button pButton 
+                        type="button"
+                        label="Edit"
+                        icon="pi pi-pencil" 
+                        [rounded]="true"
+                        severity="info"
+                        (click)="editProduct(product)">
+                </button>
+                <button pButton 
+                        type="button"
+                        label="Delete"
+                        icon="pi pi-trash" 
+                        [rounded]="true"
+                        severity="danger"
+                        (click)="deleteProduct(product.id)">
+                </button>
               </div>
             </td>
           </tr>
         </ng-template>
 
-        <ng-template #emptymessage>
+        <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="6" class="text-center">No products found.</td>
+            <td colspan="7" class="text-center p-4">
+              <div class="flex flex-column align-items-center gap-3">
+                <i class="pi pi-inbox" style="font-size: 3rem; color: #999;"></i>
+                <p style="font-size: 1.2rem; color: #666;">No products found</p>
+                <p style="color: #999;">
+                  {{ searchValue ? 'Try adjusting your search criteria' : 'Click "Create Product" to add the first product' }}
+                </p>
+              </div>
+            </td>
           </tr>
         </ng-template>
       </p-table>
     </p-card>
 
-    <!-- Confirmation Dialog -->
-    <p-confirmDialog />
-
   </div>
+
+  <!-- Create/Edit Product Modal -->
+  <p-dialog 
+    [(visible)]="displayDialog" 
+    [header]="isEditMode ? 'Edit Product' : 'Create Product'"
+    [modal]="true" 
+    [style]="{ width: '50vw' }"
+    [breakpoints]="{ '960px': '75vw', '640px': '90vw' }">
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="productName">Product Name </label>
+        <input 
+          pInputText 
+          id="productName" 
+          [(ngModel)]="selectedProduct.name" 
+          placeholder="Enter product name"
+          class="w-full" />
+      </div>
+
+      <div class="field">
+        <label for="price">Price </label>
+        <p-inputNumber
+          id="price"
+          [(ngModel)]="selectedProduct.price"
+          [min]="0"
+          [maxFractionDigits]="0"
+          [minFractionDigits]="0"
+          placeholder="Enter price (integers only)"
+          class="w-full">
+        </p-inputNumber>
+        <!--<small class="text-muted">Only positive integers allowed</small>-->
+      </div>
+
+      <div class="field">
+        <label for="dateOfManufacture">Date of Manufacture </label>
+        <input 
+          pInputText 
+          id="dateOfManufacture" 
+          type="date"
+          [(ngModel)]="selectedProduct.dateOfManufacture" 
+          class="w-full" />
+      </div>
+
+      <div class="field">
+        <label for="dateOfExpiry">Date of Expiry </label>
+        <input 
+          pInputText 
+          id="dateOfExpiry" 
+          type="date"
+          [(ngModel)]="selectedProduct.dateOfExpiry" 
+          class="w-full" />
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button pButton 
+              type="button" 
+              label="Cancel" 
+              icon="pi pi-times"
+              (click)="hideDialog()"
+              severity="secondary">
+      </button>
+      <button pButton 
+              type="button" 
+              [label]="isEditMode ? 'Update' : 'Create'" 
+              icon="pi pi-check"
+              (click)="saveProduct()"
+              severity="success">
+      </button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Confirmation Dialog -->
+  <p-confirmDialog />
+
 </app-layout>

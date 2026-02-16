@@ -8,11 +8,27 @@ export const roleGuard: CanActivateFn = (
   const authService = inject(AuthService);
   const router = inject(Router);
 
+  if (!authService.isAuthenticated()) {
+    console.log('Role guard: User not authenticated');
+    router.navigate(['/login']);
+    return false;
+  }
+
   const expectedRole = route.data['role'];
   const userRole = authService.getUserRole();
 
+  console.log(`Role guard: Expected=${expectedRole}, Actual=${userRole}`);
+
   if (userRole !== expectedRole) {
-    router.navigate(['/login']);
+    console.log('Role guard: Access denied - incorrect role');
+    // Redirect to appropriate dashboard based on actual role
+    if (userRole === 'Admin') {
+      router.navigate(['/admin/products']);
+    } else if (userRole === 'User') {
+      router.navigate(['/user/products']);
+    } else {
+      router.navigate(['/login']);
+    }
     return false;
   }
 
