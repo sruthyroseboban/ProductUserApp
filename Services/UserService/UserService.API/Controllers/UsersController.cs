@@ -3,13 +3,14 @@ using UserService.Application.Users.Commands.LoginUser;
 using UserService.Application.Users.Commands.RegisterUser;
 using UserService.Application.Users.Commands.UpdateUser;
 using UserService.Application.Users.Commands.RefreshToken;
+using UserService.Application.Users.Commands.VerifyOtp;
 using UserService.Application.Users.Queries.GetAllUsers;
 using UserService.Application.Users.Commands.DeleteUser;
 using UserService.Application.Users.Queries.GetUserById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
+using UserService.API.Helpers;
 
 namespace UserService.API.Controllers;
 
@@ -39,9 +40,38 @@ public class UsersController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginUserCommand command)
     {
-        var response = await _mediator.Send(command);
-        return Ok(response);
+        try
+        {
+            var response = await _mediator.Send(command);
+            return Ok(response);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning($"Login error: {ex.Message}");
+            return BadRequest(new { error = "Login failed. Please try again." });
+        }
     }
+
+    // ===== OTP FEATURE COMMENTED OUT =====
+    // [AllowAnonymous]
+    // [HttpPost("verify-otp")]
+    // public async Task<IActionResult> VerifyOtp(VerifyOtpCommand command)
+    // {
+    //     try
+    //     {
+    //         var response = await _mediator.Send(command);
+    //         return Ok(response);
+    //     }
+    //     catch (UnauthorizedAccessException ex)
+    //     {
+    //         return Unauthorized(new { error = ex.Message });
+    //     }
+    // }
+    // =====================================
 
     [AllowAnonymous]
     [HttpPost("refresh")]
@@ -66,21 +96,9 @@ public class UsersController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
     {
-        //// Log all claims for debugging
-        //var allClaims = string.Join(", ", User.Claims.Select(c => $"{c.Type}={c.Value}"));
-        //_logger.LogInformation($"GetAllProducts called. Claims: {allClaims}");
-
-        //// Try multiple role claim types (handles different claim type formats)
-        //var role = User.FindFirst(ClaimTypes.Role)?.Value
-        //        ?? User.FindFirst("role")?.Value;
-
-        //var isAdmin = User.IsInRole("Admin");
-        //_logger.LogInformation($"Admin explicitly requesting all products. Role: {role}, IsAdmin: {isAdmin}");
-
-        //_logger.LogInformation($"Checking admin role: {User.IsInRole("Admin")}");
-        return Ok(await _mediator.Send(new GetAllUsersQuery()));
+        return Ok(await _mediator.Send(new GetAllUsersQuery(pageNumber, pageSize)));
     }
 
     [Authorize]

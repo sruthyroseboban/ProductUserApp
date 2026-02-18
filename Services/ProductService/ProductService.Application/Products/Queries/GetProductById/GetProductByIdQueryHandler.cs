@@ -20,14 +20,22 @@ public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, P
         if (product == null)
             throw new Exception("Product not found");
 
+        // Authorization: Non-admin users can only view their own products
+        if (!request.IsAdmin && product.CreatedByUserId != request.CurrentUserId)
+        {
+            throw new UnauthorizedAccessException($"User {request.CurrentUserId} is not authorized to access product {request.Id}");
+        }
+
         return new ProductDto
         {
             Id = product.Id,
             Name = product.Name,
+            Description = product.Description,
             Price = product.Price,
             DateOfManufacture = product.DateOfManufacture,
             DateOfExpiry = product.DateOfExpiry,
-            CreatedByUserId = product.CreatedByUserId
+            CreatedByUserId = product.CreatedByUserId,
+            ImageUrl = product.ImageUrl
         };
     }
 }

@@ -1,15 +1,27 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface Product {
   id?: string;  // MongoDB uses string IDs (ObjectId)
   name: string;
+  description?: string;
   price: number;
   dateOfManufacture: string;
-  dateOfExpiry: string;
+  dateOfExpiry?: string;
   createdByUserId?: number;
+  imageUrl?: string; 
+}
+
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
 }
 
 @Injectable({
@@ -22,27 +34,36 @@ export class ProductService {
   constructor(private http: HttpClient) { }
 
   /**
-   * Get products based on user role:
+   * Get products based on user role (with pagination):
    * - Admin: Returns all products
    * - User: Returns only user's products
    * Backend handles filtering automatically based on JWT
    */
-  getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.apiUrl);
+  getProducts(pageNumber: number = 1, pageSize: number = 10): Observable<PagedResult<Product>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
+    return this.http.get<PagedResult<Product>>(this.apiUrl, { params });
   }
 
   /**
-   * Get all products (Admin only)
+   * Get all products (Admin only) with pagination
    */
-  getAllProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.apiUrl}/all`);
+  getAllProducts(pageNumber: number = 1, pageSize: number = 10): Observable<PagedResult<Product>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
+    return this.http.get<PagedResult<Product>>(`${this.apiUrl}/all`, { params });
   }
 
   /**
-   * Get only the logged-in user's products
+   * Get only the logged-in user's products with pagination
    */
-  getMyProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.apiUrl}/my-products`);
+  getMyProducts(pageNumber: number = 1, pageSize: number = 10): Observable<PagedResult<Product>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber.toString())
+      .set('pageSize', pageSize.toString());
+    return this.http.get<PagedResult<Product>>(`${this.apiUrl}/my-products`, { params });
   }
 
   /**
@@ -81,5 +102,14 @@ export class ProductService {
    */
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Upload product image to MinIO
+   */
+  uploadImage(file: File): Observable<{ imageUrl: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ imageUrl: string }>(`${this.apiUrl}/upload-image`, formData);
   }
 }

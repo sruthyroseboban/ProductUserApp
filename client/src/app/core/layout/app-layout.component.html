@@ -2,7 +2,7 @@
 
   <!-- Sidebar -->
   <div class="sidebar">
-    <h2 class="logo">ProductApp</h2>
+    <h2 class="logo">Product Serve</h2>
 
     <!-- Admin Navigation -->
     <ng-container *ngIf="isAdmin">
@@ -33,12 +33,15 @@
 
     <!-- Topbar -->
     <div class="topbar">
-      <div>Welcome 👋</div>
+      <div>
+        Welcome
+        <span style="color:crimson">
+          {{ isAdmin ? 'Admin' : 'User' }}
+          <!--({{ role }})-->
+        </span> 👋
+      </div>
 
       <div class="user-section">
-        <span>{{ isAdmin ? 'Admin' : 'User' }}
-        <!--({{ role }})-->
-        </span>
         <button class="logout-btn" (click)="onLogout()">Logout</button>
       </div>
     </div>

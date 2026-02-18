@@ -1,61 +1,20 @@
-RESET & LIGHT THEME BASE
-
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
   background-color: #F4F6F9;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #000f;
-}
-.card-ui {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  border: 1px solid #E2E8F0;
+  overflow-x: hidden;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
+app-root {
+  display: contents;
 }
 
-.table-ui {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-  .table-ui th {
-    background-color: #F1F5F9;
-    padding: 12px;
-  }
-
-  .table-ui td {
-    padding: 12px;
-    border-top: 1px solid #E2E8F0;
-  }
-
-.btn-primary {
-  background-color: #2563EB;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
-}
-
-.btn-edit {
-  background-color: #16A34A;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 6px;
-}
-
-.btn-delete {
-  background-color: #DC2626;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 6px;
+app-login, app-register {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
 }

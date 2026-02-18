@@ -1,36 +1,67 @@
-:root {
-  --bg: #fbfdff;
-  --card-bg: #ffffff;
-  --text: #000000;
-  --muted: #4b5563;
-  --accent: #e6f2ff;
-  --accent-2: #d0e9ff;
-  --table-border: #1f4a6a;
-  --btn-primary-bg: #2b6cb0;
-  --btn-secondary-bg: #9ca3af;
-  --btn-edit-bg: #f59e0b;
-  --btn-danger-bg: #dc2626;
-  --radius: 8px;
-}
-
 /* Container */
 .dashboard-container {
-  background: var(--bg);
-  color: var(--text);
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 20px;
   min-height: 100%;
-  box-sizing: border-box;
 }
 
-/* PrimeNG Form Styles */
+/* Search and Filter Section */
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filters-panel {
+  margin-bottom: 1rem;
+  animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 1200px) {
+  .filter-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-container input {
+    width: 100% !important;
+  }
+}
+
+/* Form Styles */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
-  align-items: start;
 }
 
 .field {
@@ -41,7 +72,7 @@
 
 .field label {
   font-weight: 600;
-  color: var(--text);
+  color: #fff;
   font-size: 0.9rem;
 }
 
@@ -50,8 +81,8 @@
 }
 
 /* Utility Classes */
-.mb-4 {
-  margin-bottom: 1.5rem;
+.mb-3 {
+  margin-bottom: 1rem;
 }
 
 .flex {
@@ -62,18 +93,18 @@
   gap: 0.5rem;
 }
 
-.align-items-end {
-  align-items: flex-end;
+.justify-content-between {
+  justify-content: space-between;
 }
 
 .text-center {
   text-align: center;
 }
 
-/* PrimeNG Override for better appearance */
+/* PrimeNG Overrides */
 ::ng-deep {
   .p-card {
-    box-shadow: 0 1px 4px rgba(16, 24, 40, 0.06);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   }
 
   .p-card .p-card-header {
@@ -81,15 +112,17 @@
     font-size: 1.25rem;
     padding: 1.25rem;
     border-bottom: 1px solid #e5e7eb;
+    color: #000;
   }
 
   .p-card .p-card-body {
     padding: 1.25rem;
   }
 
+  /* Table Styles */
   .p-datatable .p-datatable-thead > tr > th {
     background-color: #f9fafb;
-    color: var(--text);
+    color: #000;
     font-weight: 600;
     padding: 1rem;
     border: 1px solid #e5e7eb;
@@ -98,304 +131,235 @@
   .p-datatable .p-datatable-tbody > tr > td {
     padding: 1rem;
     border: 1px solid #e5e7eb;
+    color: #000;
   }
 
   .p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
     background-color: #f9fafb;
   }
 
-  .p-button.p-button-text {
-    padding: 0.5rem;
-  }
-
+  /* Pagination */
   .p-paginator {
     padding: 1rem;
     background-color: #f9fafb;
     border-top: 1px solid #e5e7eb;
   }
 
+  /* Input Styles */
   .p-inputtext {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #d1d5db;
     border-radius: 6px;
     font-size: 0.95rem;
+    color: #000 !important;
+    background: #fff !important;
   }
 
   .p-inputtext:enabled:focus {
-    outline: 2px solid rgba(43, 108, 176, 0.15);
-    border-color: var(--btn-primary-bg);
+    outline: 2px solid rgba(37, 99, 235, 0.2);
+    border-color: #2563eb;
     box-shadow: none;
   }
 
+  .p-inputtext::placeholder {
+    color: #9ca3af;
+  }
+
+  /* Input Number */
   .p-inputnumber {
     width: 100%;
   }
 
   .p-inputnumber .p-inputtext {
     width: 100%;
-  }
-
-  .p-confirmdialog .p-dialog-content {
-    padding: 1.5rem;
-  }
-
-  .p-confirmdialog .p-confirm-dialog-icon {
-    font-size: 2rem;
-    color: #f59e0b;
-  }
-}
-.form-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  color: var(--text); /* make text black itself instead of using var(--text) */
-}
-
-  /* Inputs */
-  .form-row input[type="text"],
-  .form-row input[type="number"],
-  .form-row input,
-  .form-row textarea {
     color: #000 !important;
-    caret-color: #000 !important;
-    background: #fff;
-    border: 1px solid #d1d5db;
-    padding: 10px 12px;
-    border-radius: 6px;
+  }
+
+  /* Dialog */
+  .p-dialog .p-dialog-header {
+    color: #000;
+  }
+
+  .p-dialog .p-dialog-content {
+    color: #000;
+  }
+
+  /* Buttons */
+  .p-button {
     font-size: 0.95rem;
-    min-width: 180px;
-    box-sizing: border-box;
   }
 
-    .form-row input:focus {
-      outline: 2px solid rgba(43, 108, 176, 0.15);
-      border-color: var(--btn-primary-bg);
-    }
-
-/* Buttons common */
-/*button {
-  color: #000;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.95rem;
-}*/
-
-/* Primary / Secondary / Edit / Danger */
-/*.btn-primary {
-  background: var(--btn-primary-bg);
-  color: #1b16ed; 
-  border: 2px solid rgba(43,108,176,0.15);
-}
-
-  .btn-primary:hover {
-    filter: brightness(0.95);
+  .p-button.p-button-text {
+    padding: 0.5rem;
   }
-
-.btn-secondary {
-  background: var(--btn-secondary-bg);
-  color: #000;
-}
-
-  .btn-secondary:hover {
-    filter: brightness(0.95);
-  }
-
-.btn-edit {
-  background: var(--btn-edit-bg);
-  color: #000;
-}
-
-  .btn-edit:hover {
-    filter: brightness(0.95);
-  }
-
-.btn-danger {
-  background: var(--btn-danger-bg);
-  color: #fff;
-}
-
-  .btn-danger:hover {
-    filter: brightness(0.95);
-  }*/
-
-/* Table wrapper for responsiveness */
-.custom-table-wrapper {
-  overflow-x: auto;
-  border-radius: 8px;
-}
-
-/* Table */
-.custom-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 720px;
-  background: var(--accent);
-  border: 3px solid var(--table-border); /* thick outer border */
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-  /* Header */
-  .custom-table thead th {
-    background: var(--accent-2);
-    color: var(--text);
-    text-align: left;
-    padding: 12px 14px;
-    font-weight: 700;
-    border-bottom: 2px solid rgba(31,74,106,0.12);
-  }
-
-  /* Cells */
-  .custom-table tbody td {
-    padding: 12px 14px;
-    color: var(--text);
-    border-top: 1px solid rgba(31,74,106,0.06);
-  }
-
-  /* Row striping for distinction while keeping light theme */
-  .custom-table tbody tr:nth-child(odd) {
-    background: rgba(255,255,255,0.0);
-  }
-
-  .custom-table tbody tr:nth-child(even) {
-    background: rgba(255,255,255,0.06);
-  }
-
-  /* Action cell */
-  .custom-table td > button {
-    margin-right: 8px;
-    padding: 6px 10px;
-    font-size: 0.9rem;
-    border-radius: 6px;
-  }
-
-  /* Small adjustments */
-  .custom-table th[width] {
-    width: 150px;
-  }
-
-/* ===== Accessibility and color overrides =====
-   Ensure labels, headings and typed input text are dark (black).
-   These rules increase specificity to override conflicting global theme styles.
-*/
-label,
-.form-row label,
-.card-header h2,
-.custom-table thead th,
-.custom-table tbody td,
-.card,
-.dashboard-container {
-  color: var(--text) !important;
-}
-
-/* Force input/textarea typed text to use the primary text color */
-.form-row input[type="text"],
-.form-row input[type="number"],
-.form-row input,
-input,
-textarea {
-  color: var(--text) !important;
-  background: #fff !important;
-  caret-color: var(--text) !important;
-}
-
-/* Hide placeholder text on focus (standard + vendor prefixes) */
-.form-row input:focus::placeholder,
-.form-row textarea:focus::placeholder,
-input:focus::placeholder,
-textarea:focus::placeholder {
-  color: transparent;
-  transition: color 0.12s linear;
-}
-
-/* WebKit / Blink */
-.form-row input:focus::-webkit-input-placeholder,
-.form-row textarea:focus::-webkit-input-placeholder,
-input:focus::-webkit-input-placeholder,
-textarea:focus::-webkit-input-placeholder {
-  color: transparent;
-}
-
-/* Mozilla Firefox */
-.form-row input:focus::-moz-placeholder,
-.form-row textarea:focus::-moz-placeholder,
-input:focus::-moz-placeholder,
-textarea:focus::-moz-placeholder {
-  color: transparent;
-  opacity: 1; /* ensure full transparency takes effect */
-}
-
-/* Microsoft Edge / IE */
-.form-row input:focus:-ms-input-placeholder,
-.form-row textarea:focus:-ms-input-placeholder,
-input:focus:-ms-input-placeholder,
-textarea:focus:-ms-input-placeholder {
-  color: transparent;
-}
-.form-row input:focus::-ms-input-placeholder,
-.form-row textarea:focus::-ms-input-placeholder,
-input:focus::-ms-input-placeholder,
-textarea:focus::-ms-input-placeholder {
-  color: transparent;
-}
-
-/* Optional: visually hide typed text on focus for inputs that opt-in via an attribute.
-   Add `data-clear-on-focus` to an input element to visually hide its existing value when focused.
-   Note: This hides text visually (sets color & caret invisible). To actually clear the value use JS (see below).
-*/
-.form-row input[data-clear-on-focus]:focus,
-.form-row textarea[data-clear-on-focus]:focus,
-input[data-clear-on-focus]:focus,
-textarea[data-clear-on-focus]:focus {
-  color: transparent !important;
-  caret-color: transparent !important;
-  transition: color 0.08s linear;
-}
-
-/* Example JS (optional) to actually clear the value on first focus:
-   Place in the component TS or a script block and only apply when desired.
-
-   document.querySelectorAll('input[data-clear-on-focus], textarea[data-clear-on-focus]').forEach(el => {
-     const handler = (e) => {
-       if (!el.dataset.cleared) {
-         el.value = '';               // clear actual value
-         el.dataset.cleared = '1';    // mark as cleared so this only runs once
-       }
-     };
-     el.addEventListener('focus', handler, { once: true });
-   });
-
-   Use this if you want the input's value removed on first click instead of only hiding it.
-*/
-
-/* Keep existing specificity and accessibility rules intact:
-   ensure placeholder color override doesn't conflict with dark/light theme overrides.
-*/
-.form-row input::placeholder,
-.form-row textarea::placeholder,
-input::placeholder,
-textarea::placeholder {
-  color: var(--muted);
-  opacity: 1;
 }
 
 /* Responsive */
 @media (max-width: 700px) {
-  .form-row {
-    flex-direction: column;
-    align-items: stretch;
+  .form-grid {
+    grid-template-columns: 1fr;
   }
 
-    .form-row input {
-      width: 100%;
-    }
-
-  .custom-table {
-    min-width: 600px;
+  .dashboard-container {
+    padding: 16px;
   }
 }
+
+/* Description cell styling */
+.description-cell {
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.description-cell:hover {
+  white-space: normal;
+  overflow: visible;
+  background: #f9fafb;
+  padding: 0.5rem;
+  border-radius: 4px;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Image Upload Styles */
+.image-upload-container {
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: #f9fafb;
+  text-align: center;
+}
+
+.image-preview {
+  position: relative;
+  display: inline-block;
+  max-width: 300px;
+  width: 100%;
+}
+
+.image-preview img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.image-info {
+  margin-top: 12px;
+  padding: 12px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 6px;
+}
+
+.file-details {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.file-name {
+  font-weight: 600;
+  color: #166534;
+  word-break: break-word;
+}
+
+.file-size {
+  color: #15803d;
+  font-size: 0.875rem;
+}
+
+.remove-image-btn {
+  position: absolute !important;
+  top: -10px;
+  right: -10px;
+  z-index: 10;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.upload-hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Product Thumbnail in Table */
+.product-image-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-thumbnail {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.product-thumbnail:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.no-image-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+
+/* Upload Progress Loader Styles */
+.upload-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: rgba(79, 70, 229, 0.05);
+  border: 2px dashed #4F46E5;
+  border-radius: 8px;
+  min-height: 200px;
+}
+
+.spinner-container {
+  margin-bottom: 16px;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.upload-text {
+  color: #4F46E5;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+

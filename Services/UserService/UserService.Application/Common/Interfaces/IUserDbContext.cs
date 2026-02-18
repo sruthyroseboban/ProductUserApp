@@ -1,3 +1,4 @@
+using UserService.Application.Common.Models;
 using UserService.Domain.Entities;
 using UserService.Application.Users.DTOs;
 
@@ -13,4 +14,5 @@ public interface IUserDbContext
     Task<User?> GetUserByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
     void RemoveEntity<T>(T entity) where T : class;
     Task<List<UserDto>> GetAllUsersAsync(CancellationToken cancellationToken);
+    Task<PagedResult<UserDto>> GetAllUsersPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
 }

@@ -16,14 +16,22 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
     public async Task<Unit> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
         var product = await _repository.GetByIdAsync(request.Id);
-        
+
         if (product == null)
             throw new Exception("Product not found");
 
+        // Authorization: Non-admin users can only update their own products
+        if (!request.IsAdmin && product.CreatedByUserId != request.CurrentUserId)
+        {
+            throw new UnauthorizedAccessException($"User {request.CurrentUserId} is not authorized to update product {request.Id}");
+        }
+
         product.Name = request.Name;
+        product.Description = request.Description;
         product.Price = request.Price;
         product.DateOfManufacture = request.DateOfManufacture;
         product.DateOfExpiry = request.DateOfExpiry;
+        product.ImageUrl = request.ImageUrl;
 
         await _repository.UpdateAsync(product);
         return Unit.Value;

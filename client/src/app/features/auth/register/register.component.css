@@ -1,0 +1,180 @@
+/* Auth Container - Fullscreen */
+.auth-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  overflow: auto;
+  z-index: 1000;
+}
+
+/* Card Styling */
+::ng-deep .auth-container .p-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+::ng-deep .auth-container .p-card .p-card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 1.75rem;
+  font-weight: 700;
+  padding: 2rem;
+  text-align: center;
+  border: none;
+}
+
+::ng-deep .auth-container .p-card .p-card-body {
+  padding: 2rem;
+  background: #fff;
+}
+
+::ng-deep .auth-container .p-card .p-card-content {
+  padding: 0;
+}
+
+/* Field Styling */
+.field {
+  margin-bottom: 1.5rem;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+/* Input Styling */
+::ng-deep .auth-container .p-inputtext {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  color: #000 !important;
+  background: #fff !important;
+}
+
+::ng-deep .auth-container .p-inputtext:enabled:hover {
+  border-color: #d1d5db;
+}
+
+::ng-deep .auth-container .p-inputtext:enabled:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+::ng-deep .auth-container .p-inputtext::placeholder {
+  color: #9ca3af;
+}
+
+/* Password Input */
+::ng-deep .auth-container .p-password {
+  width: 100%;
+}
+
+::ng-deep .auth-container .p-password .p-inputtext {
+  width: 100%;
+  color: #000 !important;
+  background: #fff !important;
+}
+
+::ng-deep .auth-container .p-password .p-password-toggle-icon {
+  color: #6b7280;
+}
+
+/* Button Styling */
+::ng-deep .auth-container button,
+::ng-deep .auth-container .p-button {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: none;
+}
+
+::ng-deep .auth-container button:hover,
+::ng-deep .auth-container .p-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+}
+
+::ng-deep .auth-container button:active,
+::ng-deep .auth-container .p-button:active {
+  transform: translateY(0);
+}
+
+/* Utility Classes */
+.mt-3 {
+  margin-top: 1rem;
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.w-full {
+  width: 100%;
+}
+
+/* Links */
+::ng-deep .auth-container a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+
+::ng-deep .auth-container a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+/* Error Messages */
+.p-error {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 10px;
+  }
+
+  ::ng-deep .auth-container .p-card {
+    max-width: 100%;
+  }
+
+  ::ng-deep .auth-container .p-card .p-card-header {
+    font-size: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  ::ng-deep .auth-container .p-card .p-card-body {
+    padding: 1.5rem;
+  }
+}

@@ -1,10 +1,11 @@
 using MediatR;
 using ProductService.Application.Common.Interfaces;
+using ProductService.Application.Common.Models;
 using ProductService.Application.Products.DTOs;
 
 namespace ProductService.Application.Products.Queries.GetAllProducts;
 
-public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, List<ProductDto>>
+public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, PagedResult<ProductDto>>
 {
     private readonly IProductRepository _repository;
 
@@ -13,18 +14,26 @@ public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, L
         _repository = repository;
     }
 
-    public async Task<List<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
+    public async Task<PagedResult<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
     {
-        var products = await _repository.GetAllAsync();
+        var pagedResult = await _repository.GetAllPagedAsync(request.PageNumber, request.PageSize);
 
-        return products.Select(p => new ProductDto
+        return new PagedResult<ProductDto>
         {
-            Id = p.Id,
-            Name = p.Name,
-            Price = p.Price,
-            DateOfManufacture = p.DateOfManufacture,
-            DateOfExpiry = p.DateOfExpiry,
-            CreatedByUserId = p.CreatedByUserId
-        }).ToList();
+            Items = pagedResult.Items.Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                DateOfManufacture = p.DateOfManufacture,
+                DateOfExpiry = p.DateOfExpiry,
+                CreatedByUserId = p.CreatedByUserId,
+                ImageUrl = p.ImageUrl
+            }).ToList(),
+            TotalCount = pagedResult.TotalCount,
+            PageNumber = pagedResult.PageNumber,
+            PageSize = pagedResult.PageSize
+        };
     }
 }

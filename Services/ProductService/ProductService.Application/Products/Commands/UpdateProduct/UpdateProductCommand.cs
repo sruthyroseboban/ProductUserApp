@@ -6,7 +6,13 @@ public class UpdateProductCommand : IRequest<Unit>
 {
     public string Id { get; set; } = default!;
     public string Name { get; set; } = default!;
+    public string? Description { get; set; }
     public decimal Price { get; set; }
     public DateTime DateOfManufacture { get; set; }
-    public DateTime DateOfExpiry { get; set; }
+    public DateTime? DateOfExpiry { get; set; } 
+    public string? ImageUrl { get; set; }
+
+    // Authorization context
+    public int CurrentUserId { get; set; }
+    public bool IsAdmin { get; set; }
 }

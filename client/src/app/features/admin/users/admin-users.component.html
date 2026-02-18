@@ -1,32 +1,62 @@
 <app-layout>
+  <!-- Toast notifications -->
+  <p-toast></p-toast>
+
+  <!-- Confirmation dialog -->
+  <p-confirmDialog></p-confirmDialog>
+
   <div class="dashboard-container">
-    
+
     <!-- User Form Card -->
     <p-card [header]="isEditMode ? 'Edit User' : 'Create User'" styleClass="mb-4">
       <div class="form-grid">
         <div class="field">
-          <label for="userName">User Name</label>
+          <label for="userName">User Name <span class="required">*</span></label>
           <input 
             pInputText 
             id="userName" 
             [(ngModel)]="selectedUser.userName" 
             placeholder="Enter user name"
-            class="w-full" />
+            class="w-full"
+            [disabled]="saving"
+            />
         </div>
 
         <div class="field">
-          <label for="email">Email</label>
+          <label for="email">Email <span class="required">*</span></label>
           <input 
             pInputText 
             id="email" 
             type="email"
             [(ngModel)]="selectedUser.email" 
             placeholder="Enter email"
-            class="w-full" />
+            class="w-full"
+            [disabled]="saving"
+             />
         </div>
 
         <div class="field">
-          <label for="role">Role</label>
+          <label for="password">
+            Password 
+            <span class="required" *ngIf="!isEditMode">*</span>
+            <span style="color: #94a3b8; font-weight: 400;" *ngIf="isEditMode">(Leave blank to keep current)</span>
+          </label>
+          <p-password 
+            id="password"
+            [(ngModel)]="userPassword"
+            [feedback]="true"
+            [toggleMask]="true"
+            placeholder="Enter password"
+            styleClass="w-full"
+            [disabled]="saving">
+          </p-password>
+          <small style="color: #94a3b8; font-size: 0.85rem;">
+            {{ isEditMode ? 'Only fill this if you want to change the password' : 'Minimum 6 characters required' }}
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="role">Role <span class="required">*</span></label>
           <p-select 
             id="role"
             [(ngModel)]="selectedUser.role" 
@@ -34,35 +64,74 @@
             optionLabel="label" 
             optionValue="value"
             placeholder="Select a role"
-            class="w-full">
+            class="w-full"
+            [disabled]="saving">
           </p-select>
         </div>
-
-        <div class="field flex gap-2 align-items-end">
-          <p-button 
-            [label]="isEditMode ? 'Update' : 'Create'" 
-            icon="pi pi-check"
-            (onClick)="saveUser()"
-            severity="success">
-          </p-button>
-
-          <p-button 
-            *ngIf="isEditMode"
-            label="Cancel" 
-            icon="pi pi-times"
-            (onClick)="resetForm()"
-            severity="secondary">
-          </p-button>
         </div>
-      </div>
+        <div class="field">
+          <!-- Empty div to maintain grid structure -->
+          <div class="field flex gap-2 align-items-end">
+            <p-button [label]="saving ? 'Saving...' : (isEditMode ? 'Update' : 'Create')"
+                      [icon]="saving ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
+                      (onClick)="saveUser()"
+                      severity="success"
+                      [disabled]="saving">
+            </p-button>
+
+            <p-button *ngIf="isEditMode"
+                      label="Cancel"
+                      icon="pi pi-times"
+                      (onClick)="resetForm()"
+                      severity="secondary"
+                      [disabled]="saving">
+            </p-button>
+          </div>
+        </div>
     </p-card>
 
     <!-- Users Table Card -->
     <p-card header="All Users">
+      <!-- Search Bar -->
+      <div class="flex justify-content-between mb-3">
+        <div class="search-container">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input pInputText
+                   type="text"
+                   placeholder="Search by name or email..."
+                   [(ngModel)]="searchValue"
+                   (input)="onSearch()"
+                   style="width: 350px;" />
+          </span>
+          <button pButton 
+                  type="button" 
+                  icon="pi pi-times"
+                  label="Clear"
+                  (click)="clearSearch()"
+                  severity="secondary"
+                  [outlined]="true"
+                  class="ml-2"
+                  *ngIf="searchValue">
+          </button>
+        </div>
+        <div class="flex gap-2">
+          <button pButton 
+                  type="button" 
+                  label="Refresh" 
+                  icon="pi pi-refresh"
+                  (click)="loadUsers()">
+          </button>
+        </div>
+      </div>
+
       <p-table 
-        [value]="(users$ | async) || []" 
+        [value]="filteredUsers" 
         [paginator]="true" 
-        [rows]="10"
+        [rows]="pageSize"
+        [totalRecords]="totalRecords"
+        [loading]="loading"
+        (onPage)="onPageChange($event)"
         [tableStyle]="{ 'min-width': '50rem' }"
         [rowsPerPageOptions]="[5, 10, 20]"
         [showCurrentPageReport]="true"

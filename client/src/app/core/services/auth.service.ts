@@ -10,30 +10,37 @@ interface LoginResponse {
   expiresIn: number;
 }
 
+interface OtpRequiredResponse {
+  email: string;
+  message: string;
+  otpRequired: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private apiUrl = `${environment.apiUrl}/users`; // Gateway routes /users to UserService
+  private apiUrl = `${environment.apiUrl}/users`;
 
   constructor(private http: HttpClient, private router: Router) { }
 
-  login(data: any): Observable<LoginResponse> {
-    console.log('Login request to Gateway:', data);
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, data)
+  login(data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/login`, data);
+  }
+
+  verifyOtp(email: string, otp: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/verify-otp`, { email, otp })
       .pipe(
         tap(response => {
           if (response.accessToken && response.refreshToken) {
             this.setTokens(response.accessToken, response.refreshToken);
-            console.log('Tokens saved successfully');
           }
         })
       );
   }
 
   register(data: any): Observable<any> {
-    console.log('Register request to Gateway:', data);
     return this.http.post(`${this.apiUrl}/register`, data);
   }
 
@@ -50,9 +57,51 @@ export class AuthService {
     return localStorage.getItem('refresh_token');
   }
 
-  // Legacy support - for components still using getToken()
   getToken(): string | null {
     return this.getAccessToken();
+  }
+
+  getUserRole(): string | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] 
+          || payload['role'] 
+          || payload['Role'] 
+          || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  getUserEmail(): string | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload['email'] || payload['Email'] || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  getUserId(): number | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const userId = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] 
+                  || payload['sub'] 
+                  || payload['nameid'] 
+                  || payload['userId'];
+      return userId ? parseInt(userId, 10) : null;
+    } catch (e) {
+      return null;
+    }
   }
 
   refreshToken(): Observable<LoginResponse> {
@@ -66,7 +115,6 @@ export class AuthService {
         tap(response => {
           if (response.accessToken && response.refreshToken) {
             this.setTokens(response.accessToken, response.refreshToken);
-            console.log('Tokens refreshed successfully');
           }
         })
       );
@@ -88,57 +136,9 @@ export class AuthService {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const expiry = payload.exp;
       const now = Math.floor(Date.now() / 1000);
-
-      if (expiry < now) {
-        console.log('Access token expired');
-        // Don't logout immediately - let interceptor try to refresh
-        return false;
-      }
-
-      return true;
+      return expiry >= now;
     } catch (e) {
-      console.error('Invalid token', e);
       return false;
-    }
-  }
-
-  getUserRole(): string | null {
-    const token = this.getAccessToken();
-    if (!token) return null;
-
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload['role'] || payload['Role'] || null;
-    } catch (e) {
-      console.error('Failed to parse token', e);
-      return null;
-    }
-  }
-
-  getUserId(): number | null {
-    const token = this.getAccessToken();
-    if (!token) return null;
-
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const userId = payload['sub'] || payload['nameid'] || payload['userId'];
-      return userId ? parseInt(userId, 10) : null;
-    } catch (e) {
-      console.error('Failed to parse token', e);
-      return null;
-    }
-  }
-
-  getUserEmail(): string | null {
-    const token = this.getAccessToken();
-    if (!token) return null;
-
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload['email'] || null;
-    } catch (e) {
-      console.error('Failed to parse token', e);
-      return null;
     }
   }
 

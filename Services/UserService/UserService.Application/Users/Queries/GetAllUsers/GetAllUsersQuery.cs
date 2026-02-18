@@ -1,6 +1,7 @@
 using MediatR;
+using UserService.Application.Common.Models;
 using UserService.Application.Users.DTOs;
 
 namespace UserService.Application.Users.Queries.GetAllUsers;
 
-public record GetAllUsersQuery : IRequest<List<UserDto>>;
+public record GetAllUsersQuery(int PageNumber = 1, int PageSize = 10) : IRequest<PagedResult<UserDto>>;

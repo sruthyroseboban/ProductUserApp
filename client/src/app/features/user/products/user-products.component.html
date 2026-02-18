@@ -8,45 +8,121 @@
 
       <!-- Toolbar -->
       <div class="flex justify-content-between mb-3">
-        <input pInputText 
-               type="text" 
-               placeholder="Search products..."
-               [(ngModel)]="searchValue"
-               (input)="onSearch()" />
-        <!--<div class="flex gap-2">-->
+        <div class="search-container">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input pInputText
+                   type="text"
+                   placeholder="Search by name or description..."
+                   [(ngModel)]="searchValue"
+                   (input)="onSearch()"
+                   style="width: 300px;" />
+          </span>
           <button pButton
-                  type="button" 
-                  label="Create Product" 
+                  type="button"
+                  icon="pi pi-filter"
+                  [label]="showFilters ? 'Hide Filters' : 'Show Filters'"
+                  (click)="toggleFilters()"
+                  [severity]="showFilters ? 'info' : 'secondary'"
+                  class="ml-2">
+          </button>
+          <button pButton
+                  type="button"
+                  icon="pi pi-filter-slash"
+                  label="Clear Filters"
+                  (click)="clearFilters()"
+                  severity="danger"
+                  [outlined]="true"
+                  class="ml-2"
+                  *ngIf="searchValue || minPrice || maxPrice || startDate">
+          </button>
+        </div>
+        <div class="flex gap-2">
+          <button pButton
+                  type="button"
+                  label="Create Product"
                   icon="pi pi-plus"
                   (click)="showCreateDialog()"
                   severity="success">
           </button>
 
-          <button pButton 
-                  type="button" 
-                  label="Refresh" 
+          <button pButton
+                  type="button"
+                  label="Refresh"
                   icon="pi pi-refresh"
                   (click)="loadProducts()">
           </button>
-        <!--</div>-->
+        </div>
+      </div>
+
+      <!-- Advanced Filters Panel -->
+      <div class="filters-panel" *ngIf="showFilters">
+        <p-card header="Advanced Filters" styleClass="filter-card">
+          <div class="filter-grid">
+            <div class="field">
+              <label for="minPrice">Min Price</label>
+              <p-inputNumber id="minPrice"
+                             [(ngModel)]="minPrice"
+                             [min]="0"
+                             [maxFractionDigits]="2"
+                             placeholder="Min"
+                             (ngModelChange)="applyFilters()"
+                             class="w-full">
+              </p-inputNumber>
+            </div>
+
+            <div class="field">
+              <label for="maxPrice">Max Price</label>
+              <p-inputNumber id="maxPrice"
+                             [(ngModel)]="maxPrice"
+                             [min]="0"
+                             [maxFractionDigits]="2"
+                             placeholder="Max"
+                             (ngModelChange)="applyFilters()"
+                             class="w-full">
+              </p-inputNumber>
+            </div>
+
+            <div class="field">
+              <label for="startDate">Manufacture Date From</label>
+              <input pInputText
+                     id="startDate"
+                     type="date"
+                     [(ngModel)]="startDate"
+                     (ngModelChange)="applyFilters()"
+                     class="w-full" />
+            </div>
+
+            <!-- Expiry Date filter removed - not needed for user products -->
+          </div>
+        </p-card>
       </div>
 
       <!-- Table -->
-      <p-table
-        #dt
-        [value]="filteredProducts"
-        [paginator]="true"
-        [rows]="5"
-        [loading]="loading"
-        [rowsPerPageOptions]="[5,10,20]"
-        responsiveLayout="scroll"
-        sortMode="multiple">
+      <p-table #dt
+               [value]="products"
+               [lazy]="true"
+               [paginator]="true"
+               [rows]="pageSize"
+               [totalRecords]="totalRecords"
+               [loading]="loading"
+               (onLazyLoad)="onLazyLoad($event)"
+               [rowsPerPageOptions]="[5,10,20]"
+               responsiveLayout="scroll"
+               sortMode="multiple">
+
 
         <ng-template pTemplate="header">
           <tr>
+            <th style="width: 80px">Image</th>
             <th pSortableColumn="name">
               Name
               <p-sortIcon field="name"></p-sortIcon>
+            </th>
+
+            <th pSortableColumn="description" style="min-width: 200px">
+              Description
+              <p-sortIcon field="description"></p-sortIcon>
             </th>
 
             <th pSortableColumn="price">
@@ -70,24 +146,41 @@
 
         <ng-template pTemplate="body" let-product>
           <tr>
+            <td>
+              <div *ngIf="product.imageUrl" class="product-image-cell">
+                <img [src]="product.imageUrl"
+                     [alt]="product.name"
+                     class="product-thumbnail"
+                     (click)="viewImage(product.imageUrl)"
+                     title="Click to view full size" />
+              </div>
+              <div *ngIf="!product.imageUrl" class="no-image-cell">
+                <i class="pi pi-image" style="font-size: 2rem; color: #ccc;"></i>
+              </div>
+            </td>
             <td>{{ product.name }}</td>
+            <td>
+              <div class="description-cell" [title]="product.description || 'No description'">
+                {{ product.description || '-' }}
+              </div>
+            </td>
             <td>{{ product.price}}</td>
             <td>{{ product.dateOfManufacture | date }}</td>
             <td>{{ product.dateOfExpiry | date }}</td>
             <td>
               <div class="flex gap-2">
-                <button pButton 
-                        type="button" 
+                <button pButton
+                        type="button"
                         label="Edit"
-                        icon="pi pi-pencil" 
+                        icon="pi pi-pencil"
                         [rounded]="true"
                         severity="info"
                         (click)="editProduct(product)">
                 </button>
-                <button pButton 
-                        type="button" 
+                <button pButton
+                        type="button"
                         label="Delete"
-                        icon="pi pi-trash" 
+                        icon="pi pi-trash"
                         [rounded]="true"
                         severity="danger"
                         (click)="deleteProduct(product.id)">
@@ -99,7 +192,7 @@
 
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="5" class="text-center p-4">
+            <td colspan="7" class="text-center p-4">
               <div class="flex flex-column align-items-center gap-3">
                 <i class="pi pi-inbox" style="font-size: 3rem; color: #999;"></i>
                 <p style="font-size: 1.2rem; color: #666;">No products found</p>
@@ -125,7 +218,7 @@
 
     <div class="form-grid">
       <div class="field">
-        <label for="productName">Product Name </label>
+        <label for="productName">Product Name</label>
         <input 
           pInputText 
           id="productName" 
@@ -134,39 +227,108 @@
           class="w-full" />
       </div>
 
-      <div class="field">
-        <label for="price">Price </label>
-        <p-inputNumber
-          id="price"
-          [(ngModel)]="productForm.price"
-        
-          [min]="0"
-          [maxFractionDigits]="0"
-          [minFractionDigits]="0"
-          placeholder="Enter price (integers only)"
-          class="w-full">
-        </p-inputNumber>
-        <!--<small class="text-muted">Only positive integers allowed</small>-->
+      <div class="field" style="grid-column: 1 / -1;">
+        <label for="description">Description</label>
+        <textarea 
+          id="description" 
+          [(ngModel)]="productForm.description" 
+          placeholder="Enter product description"
+          rows="3"
+          class="w-full p-inputtext"
+          style="width: 100%; resize: vertical;">
+        </textarea>
       </div>
 
       <div class="field">
-        <label for="dateOfManufacture">Date of Manufacture </label>
+        <label for="price">Price</label>
+        <p-inputNumber
+          id="price"
+          [(ngModel)]="productForm.price"
+          [min]="0"
+          [maxFractionDigits]="2"
+          [minFractionDigits]="0"
+          placeholder="Enter price"
+          class="w-full">
+        </p-inputNumber>
+      </div>
+
+      <div class="field">
+        <label for="dateOfManufacture">Date of Manufacture</label>
         <input 
           pInputText 
           id="dateOfManufacture" 
           type="date"
           [(ngModel)]="productForm.dateOfManufacture" 
-          class="w-full" />
+          class="w-full"/>
       </div>
 
       <div class="field">
-        <label for="dateOfExpiry">Date of Expiry </label>
+        <label for="dateOfExpiry">Date of Expiry <span style="color: #94a3b8; font-weight: 400;">(Optional)</span></label>
         <input 
           pInputText 
           id="dateOfExpiry" 
           type="date"
           [(ngModel)]="productForm.dateOfExpiry" 
-          class="w-full" />
+          class="w-full"/>
+        <small style="color: #94a3b8; font-size: 0.85rem;">Leave blank if product doesn't expire</small>
+      </div>
+
+      <!-- Image Upload Section -->
+      <div class="field" style="grid-column: 1 / -1;">
+        <label for="productImage">Product Image (Optional)</label>
+
+        <div class="image-upload-container">
+          <!-- Upload Progress Loader -->
+          <div *ngIf="uploading" class="upload-progress">
+            <div class="spinner-container">
+              <i class="pi pi-spin pi-spinner" style="font-size: 3rem; color: #4F46E5;"></i>
+            </div>
+            <p class="upload-text">Uploading image, please wait...</p>
+            <p-progressBar mode="indeterminate" [style]="{'height': '6px'}"></p-progressBar>
+          </div>
+
+          <!-- Image Preview -->
+          <div *ngIf="imagePreview && !uploading" class="image-preview">
+            <img [src]="imagePreview" alt="Preview" />
+            <div class="image-info">
+              <div class="file-details">
+                <i class="pi pi-check-circle" style="color: #22c55e; margin-right: 8px;"></i>
+                <span class="file-name">{{ selectedFile?.name }}</span>
+                <span class="file-size" *ngIf="selectedFile">({{ formatFileSize(selectedFile.size) }})</span>
+              </div>
+            </div>
+            <button pButton 
+                    type="button"
+                    icon="pi pi-times"
+                    class="remove-image-btn"
+                    (click)="removeImage()"
+                    [rounded]="true"
+                    severity="danger"
+                    size="small"
+                    pTooltip="Remove image"
+                    tooltipPosition="top">
+            </button>
+          </div>
+
+          <!-- Upload Button -->
+          <div *ngIf="!imagePreview && !uploading" class="upload-placeholder">
+            <input 
+              type="file" 
+              id="productImage" 
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              style="display: none;"
+              #fileInput />
+            <button pButton 
+                    type="button"
+                    label="Choose Image"
+                    icon="pi pi-upload"
+                    (click)="fileInput.click()"
+                    severity="secondary">
+            </button>
+            <p class="upload-hint">JPG, PNG, GIF, WEBP (Max 5MB)</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -176,16 +338,21 @@
               label="Cancel" 
               icon="pi pi-times"
               (click)="hideDialog()"
+              [disabled]="uploading"
               severity="secondary">
       </button>
       <button pButton 
               type="button" 
-              [label]="isEditMode ? 'Update' : 'Create'" 
-              icon="pi pi-check"
+              [label]="uploading ? 'Uploading...' : (isEditMode ? 'Update' : 'Create')" 
+              [icon]="uploading ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
               (click)="saveProduct()"
+              [disabled]="uploading"
               severity="success">
       </button>
     </ng-template>
   </p-dialog>
+
+  <!-- Image Viewer Modal -->
+  <app-image-viewer #imageViewer></app-image-viewer>
 
 </app-layout>

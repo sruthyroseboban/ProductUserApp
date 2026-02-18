@@ -1,24 +1,47 @@
+<p-toast></p-toast>
+
 <div class="auth-container">
   <p-card header="Register">
     <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="p-fluid">
 
       <div class="field">
-        <label>Name</label>
-        <input pInputText type="text" formControlName="name" />
+        <label>Username</label>
+        <input pInputText type="text" formControlName="userName" />
+        <small class="p-error" *ngIf="registerForm.get('userName')?.invalid && registerForm.get('userName')?.touched">
+          <span *ngIf="registerForm.get('userName')?.errors?.['required']">Username is required.</span>
+        </small>
       </div>
 
       <div class="field mt-3">
         <label>Email</label>
         <input pInputText type="email" formControlName="email" />
+        <small class="p-error" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+          <span *ngIf="registerForm.get('email')?.errors?.['required']">Email is required.</span>
+          <span *ngIf="registerForm.get('email')?.errors?.['email']">Please enter a valid email.</span>
+        </small>
       </div>
 
       <div class="field mt-3">
         <label>Password</label>
-        <p-password formControlName="password" [feedback]="false"></p-password>
+        <p-password formControlName="password" [feedback]="true" [toggleMask]="true"></p-password>
+        <small class="p-error" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+          <span *ngIf="registerForm.get('password')?.errors?.['required']">Password is required.</span>
+          <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters.</span>
+        </small>
+      </div>
+
+      <div class="field mt-3">
+        <label>Confirm Password</label>
+        <p-password formControlName="confirmPassword" [feedback]="false" [toggleMask]="true"></p-password>
+        <small class="p-error" *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
+          <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Please confirm your password.</span>
+        </small>
       </div>
 
       <div class="mt-4">
-        <button pButton type="submit" label="Register" class="w-full"></button>
+        <button type="submit" class="w-full" [disabled]="loading">
+          {{ loading ? 'Registering...' : 'Register' }}
+        </button>
       </div>
 
       <div class="mt-3 text-center">

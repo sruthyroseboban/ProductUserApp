@@ -1,0 +1,30 @@
+docker logout
+docker pull mongo:7.0
+docker pull mcr.microsoft.com/mssql/server:2022-latest
+docker pull quay.io/minio/minio:latest
+docker-compose up -d
+
+docker-compose up -d
+
+docker ps
+
+# Logout from Docker Hub
+docker logout
+
+# Then try again
+docker-compose up -d
+
+
+Complete Docker Deployment Guide
+
+# 1. Build your image
+docker build -t yourusername/productservice:latest .
+
+# 2. Login to Docker Hub
+docker login
+
+# 3. Push to Docker Hub
+docker push yourusername/productservice:latest
+
+# Others can pull it:
+docker pull yourusername/productservice:latest

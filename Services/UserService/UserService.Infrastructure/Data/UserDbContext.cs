@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Common.Interfaces;
+using UserService.Application.Common.Models;
 using UserService.Domain.Entities;
 using UserService.Application.Users.DTOs;
 
@@ -11,7 +12,7 @@ public class UserDbContext : DbContext, IUserDbContext
         : base(options)
     {
     }
-    
+
     public DbSet<User> Users { get; set; }
 
     IQueryable<User> IUserDbContext.Users => Users;
@@ -58,6 +59,33 @@ public class UserDbContext : DbContext, IUserDbContext
                 CreatedAt = user.CreatedAt
             })
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<PagedResult<UserDto>> GetAllUsersPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    {
+        var totalCount = await Users.CountAsync(cancellationToken);
+
+        var items = await Users
+            .AsNoTracking()
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(user => new UserDto
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                Role = user.Role,
+                CreatedAt = user.CreatedAt
+            })
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<UserDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

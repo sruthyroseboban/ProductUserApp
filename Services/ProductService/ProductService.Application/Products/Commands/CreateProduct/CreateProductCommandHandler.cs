@@ -18,10 +18,12 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
         var product = new Product
         {
             Name = request.Name,
+            Description = request.Description,
             Price = request.Price,
             DateOfManufacture = request.DateOfManufacture,
             DateOfExpiry = request.DateOfExpiry,
-            CreatedByUserId = request.CreatedByUserId
+            CreatedByUserId = request.CreatedByUserId,
+            ImageUrl = request.ImageUrl
         };
 
         var id = await _repository.AddAsync(product);

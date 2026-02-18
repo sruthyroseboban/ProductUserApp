@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using ProductService.Application.Common.Interfaces;
+using ProductService.Application.Common.Models;
 using ProductService.Domain.Entities;
 using ProductService.Infrastructure.Data;
 
@@ -22,6 +23,23 @@ public class ProductRepository : IProductRepository
         return await _products.Find(_ => true).ToListAsync();
     }
 
+    public async Task<PagedResult<Product>> GetAllPagedAsync(int pageNumber, int pageSize)
+    {
+        var totalCount = await _products.CountDocumentsAsync(_ => true);
+        var items = await _products.Find(_ => true)
+            .Skip((pageNumber - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync();
+
+        return new PagedResult<Product>
+        {
+            Items = items,
+            TotalCount = (int)totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+    }
+
     public async Task<Product?> GetByIdAsync(string id)
     {
         return await _products.Find(p => p.Id == id).FirstOrDefaultAsync();
@@ -30,6 +48,24 @@ public class ProductRepository : IProductRepository
     public async Task<List<Product>> GetByUserIdAsync(int userId)
     {
         return await _products.Find(p => p.CreatedByUserId == userId).ToListAsync();
+    }
+
+    public async Task<PagedResult<Product>> GetByUserIdPagedAsync(int userId, int pageNumber, int pageSize)
+    {
+        var filter = Builders<Product>.Filter.Eq(p => p.CreatedByUserId, userId);
+        var totalCount = await _products.CountDocumentsAsync(filter);
+        var items = await _products.Find(filter)
+            .Skip((pageNumber - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync();
+
+        return new PagedResult<Product>
+        {
+            Items = items,
+            TotalCount = (int)totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
     }
 
     public async Task<string> AddAsync(Product product)
